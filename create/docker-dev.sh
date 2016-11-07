@@ -1,0 +1,9 @@
+docker pull openshift/wildfly-100-centos7
+docker pull jboss/wildfly
+docker pull gitlab/gitlab-ce:8.13.3-ce.0
+docker pull redis:3.2.3-alpine
+docker pull openshiftdemos/gogs:latest
+docker pull openshiftdemos/nexus:2.13.0-01
+docker pull openshiftdemos/sonarqube:6.0
+docker pull ayufan/gitlab-i2p:latest
+docker pull gitlab/gitlab-runner:alpine-v1.7.0-rc.2

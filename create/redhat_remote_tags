@@ -1,0 +1,8 @@
+if [ $# -ne 1 ]; then
+  cat << EOF
+This script checks the different docker images we have on our official redhat repo.
+Usage example: redhat_remote_tags openshift3/ose-pod
+EOF
+else
+  curl -s -S "https://registry.access.redhat.com/v1/repositories/$@/tags" | $PWD/jq
+fi
