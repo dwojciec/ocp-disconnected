@@ -32,4 +32,7 @@ docker pull $REGISTRY:5000/openshift3/mongodb-24-rhel7
 docker pull $REGISTRY:5000/openshift3/jenkins-1-rhel7:v3.3
 docker pull $REGISTRY:5000/openshift3/jenkins-slave-maven-rhel7:v3.3
 docker pull $REGISTRY:5000/openshift3/jenkins-slave-nodejs-rhel7:v3.3
+echo "Checking Docker images $REGISTRY:5000"
 docker images | grep $REGISTRY
+echo "Verify that all the image streams now have the tags populated"
+oc get imagestreams -n openshift

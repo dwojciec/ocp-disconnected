@@ -190,3 +190,9 @@ To do it you can use the script *docker-tag.sh*
 
 
 ###Editing the Image Stream Definitions
+
+* use *stream-definition.sh* : to change 'registry.access.redhat.com' to 'REGISTRY_IP', and to update openshift3, rhscl to openshift (corresponding to the openshift project).
+
+
+### Loading the Container Images
+* use *docker-pull.sh* : At this point the system is ready to load the container images.
