@@ -195,4 +195,4 @@ To do it you can use the script *docker-tag.sh*
 
 
 ### Loading the Container Images
-* use *docker-pull.sh* : At this point the system is ready to load the container images.
+* use *docker-pull.sh* : At this point the system is ready to load the container images into the OCP registry.
