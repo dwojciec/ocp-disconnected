@@ -79,7 +79,7 @@ DOCKER part
 
 
 
-##Transport
+## <a name="transport"></a>Transport
 
 To be able to move all sources files I setup an http server on my AWS VM :
 
@@ -99,10 +99,94 @@ and I copy all tar files inside /var/www/html/repos.
 
 
 Once done you can use a script like *wget-tar.sh* to download all tar files on your external disk or on a server.
+ 
+
+```
+Usage: ./wget-tar.sh <ip address of http server>
+
+```
 
 ##Restore
 
+You need to access a VM on which a http server is installed and we are restoring all tar files on it to be able to access from each nodes on which OCP will be installed.
+
+Create a **Repository Server** : in our case I'm using a extra VM on which I installed httpd. It's the same process you can read in the section [**Transport**](#transport) .
 
 **load** directory:
-Once the repository server created we have to load all sources (rpm, docker images, git repos) on the target system.
+Once the repository server created we have to load all sources (rpm, docker images, git repos) on the target system. All tar files copied have to be untarred. *untar.sh* 
 
+
+```
+# ./untar.sh 
+```
+
+**Connecting the Repositories**
+
+create a ose.repo file to /etc/yum.repos.d based on the template 'ose.repo.template'. To do it :
+
+* use *repo.sh* script : 
+
+``` 
+./repo.sh <repository server ip>
+example : ./repo.sh 10.0.1.211 
+where 10.0.1.211 is the Repository Server IP address.
+```
+
+* copy the ose.repo file generated into /etc/yum.repos.d directory on each cluster nodes of OCP. Check the list of 'CLUSTER_HOSTS' variable.
+
+```# ./copy-ose-repo.sh
+```
+
+
+ Now you are able to install any rpm on each node part of OCP cluster from the local Repository Server.
+
+
+**Distribute the Docker images**
+
+Distribute the Docker images tar to each node and load into the server’s local Docker Engine:* use *docker-image-load.sh* : this script get tar file from repository server and load it on each **node** part of the OCP cluster. Edit the script and change the CLUSTER_HOSTS variable with the list of each nodes.
+```# ./docker-image-load.sh <repository server ip>
+example : ./docker-image-load.sh 10.0.1.211 
+where 10.0.1.211 is the Repository Server IP address.
+```
+
+* <a name="builder"></a> use *docker-image-builder.sh* : this script get tar file from repository server and load it on each **master** nodes part of the OCP cluster. Edit the script and change the CLUSTER_HOSTS variable with the list of **master** nodes.
+
+```# ./docker-image-builder.sh <repository server ip>
+example : ./docker-image-builder.sh 10.0.1.211 
+where 10.0.1.211 is the Repository Server IP address.
+```
+
+##Post-Installation Changes
+
+###Re-tagging S2I Builder Images
+
+On the master host where you imported the [**S2I builder images**](#builder) (docker-image-builder.sh) , obtain the service address of your Docker registry that you installed on the master
+
+```
+
+# export REGISTRY=$(oc get service docker-registry -t '{{.spec.clusterIP}}{{"\n"}}')
+```
+
+
+Next, tag all of the builder images that you synced and exported before pushing them into the OpenShift Container Platform Docker registry. For example, if you synced and exported only the Tomcat image
+
+
+```
+# docker tag \
+registry.access.redhat.com/jboss-webserver-3/webserver30-tomcat7-openshift:1.1 \
+$REGISTRY:5000/openshift/webserver30-tomcat7-openshift:1.1
+# docker tag \
+registry.access.redhat.com/jboss-webserver-3/webserver30-tomcat7-openshift:latest \
+$REGISTRY:5000/openshift/webserver30-tomcat7-openshift:1.2
+# docker tag \
+registry.access.redhat.com/jboss-webserver-3/webserver30-tomcat7-openshift:latest \
+$REGISTRY:5000/openshift/webserver30-tomcat7-openshift:latest
+```
+
+
+To do it you can use the script *docker-tag.sh*
+
+
+
+
+###Editing the Image Stream Definitions
