@@ -52,11 +52,52 @@ You need the ***createrepo*** and ***reposync*** (part or yum-utils) utility
 
 You are ready now to create the source package
 
-#scripts
-**create** directory: we have to create the source package. 
+#Required Software and Components
+**create** directory: you will find several script to prepare and create the source package. 
 
-* sync.sh : Sync the packages and create the repository for each of them
-* 
+RPM part
+ 
+* *sync.sh* : Sync the packages and create the repository for each of them and create a tar file for each rpms package.  The REPO_LIST variable contents the list of rpms to prepare.
+
+##Syncing Docker images and Preparing Images for Export 
+
+DOCKER part
+
+
+
+* *docker-image-ose.sh*:  OpenShift Container Platform containerized components 
+* save-ose.sh: create a **ose3-images.tar** file
+
+* *docker-log-metrics.sh*: OpenShift Container Platform containerized components for the additional centralized log aggregation and metrics aggregation components.
+* *save-log* : create a **ose3-logging-metrics-images.tar** file
+
+* *docker-demo.sh* : load all official docker images needed during a PoC.  Red Hat-certified Source-to-Image (S2I) builder image.
+* *save-demo.sh* : create a tar file **ose3-builder-images.tar** on each docker image.
+
+* *docker-dev.sh*: Additional docker images like (wildfly, gogs, nexus, sonarqube, gitlab, etc...)
+* *save-dev.sh* : create a **ose-devgit-images.tar** file
+
+
+
+##Transport
+
+To be able to move all sources files I setup an http server on my AWS VM :
+
+```
+# yum install httpd
+```
+
+and I copy all tar files inside /var/www/html/repos.
+```
+# cp -a /path/to/repos /var/www/html/
+# chmod -R +r /var/www/html/repos
+# restorecon -vR /var/www/html
+```
+
+Once done you can use a script like *wget-tar.sh* to download all tar files on your external disk or on a server.
+
+##Restore
+
 
 **load** directory:
 Once the repository server created we have to load all sources (rpm, docker images, git repos) on the target system.
