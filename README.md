@@ -88,11 +88,15 @@ To be able to move all sources files I setup an http server on my AWS VM :
 ```
 
 and I copy all tar files inside /var/www/html/repos.
+
 ```
 # cp -a /path/to/repos /var/www/html/
 # chmod -R +r /var/www/html/repos
 # restorecon -vR /var/www/html
 ```
+
+![](https://github.com/dwojciec/ocp-disconnected/blob/master/images/transport.png "transport")
+
 
 Once done you can use a script like *wget-tar.sh* to download all tar files on your external disk or on a server.
 
